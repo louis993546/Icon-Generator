@@ -2,12 +2,11 @@ package io.github.louistsaitszho.icongenerator;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.provider.MediaStore;
+import android.os.Environment;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -24,7 +23,15 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.amulyakhare.textdrawable.TextDrawable;
+import com.mikepenz.aboutlibraries.Libs;
+import com.mikepenz.aboutlibraries.LibsBuilder;
+import com.mikepenz.aboutlibraries.LibsConfiguration;
 import com.pes.androidmaterialcolorpickerdialog.ColorPicker;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
 public class MainActivity extends AppCompatActivity {
     ImageView image;
@@ -32,6 +39,26 @@ public class MainActivity extends AppCompatActivity {
     int currentG = 0;
     int currentB = 0;
     String currentText = "A";
+
+    private static Bitmap eraseBG(Bitmap src, int color) {
+        int width = src.getWidth();
+        int height = src.getHeight();
+        Bitmap b = src.copy(Bitmap.Config.ARGB_8888, true);
+        b.setHasAlpha(true);
+
+        int[] pixels = new int[width * height];
+        src.getPixels(pixels, 0, width, 0, 0, width, height);
+
+        for (int i = 0; i < width * height; i++) {
+            if (pixels[i] == color) {
+                pixels[i] = 0;
+            }
+        }
+
+        b.setPixels(pixels, 0, width, 0, 0, width, height);
+
+        return b;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,8 +91,28 @@ public class MainActivity extends AppCompatActivity {
             }
             return true;
         } else if (id == R.id.action_about) {
-            Intent intent = new Intent(this, AboutActivity.class);
-            startActivity(intent);
+            new LibsBuilder()
+                    .withActivityStyle(Libs.ActivityStyle.LIGHT_DARK_TOOLBAR)
+                    .withAutoDetect(true)
+                    .withAboutVersionShown(true)
+                    .withAboutIconShown(true)
+                    .withVersionShown(true)
+                    .withLibraries("AndroidMaterialColorPickerDialog", "TextDrawable")
+                    .withActivityTitle("About")
+                    .withAboutAppName("Icon Generator")
+                    .withAboutDescription("This app allows you to generate a simple text-based icon in seconds")
+                    .withUiListener(new LibsConfiguration.LibsUIListener() {
+                        @Override
+                        public View preOnCreateView(View view) {
+                            return null;
+                        }
+
+                        @Override
+                        public View postOnCreateView(View view) {
+                            return null;
+                        }
+                    })
+                    .start(this);
         }
 
         return super.onOptionsItemSelected(item);
@@ -85,16 +132,36 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void saveImage() {
+        CoordinatorLayout cl = (CoordinatorLayout) findViewById(R.id.coordinatorlayout);
+        String message;
         if (image == null) {
             image = (ImageView) findViewById(R.id.imageView);
         }
         image.setDrawingCacheEnabled(true);
         image.destroyDrawingCache();
         image.buildDrawingCache();
-        Bitmap bitmap = image.getDrawingCache();
-        MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, System.currentTimeMillis() + ".png" , "TextDrawable");
-        CoordinatorLayout cl = (CoordinatorLayout) findViewById(R.id.coordinatorlayout);
-        Snackbar.make(cl, "Icon Saved", Snackbar.LENGTH_LONG).show();
+        Bitmap bitmap = eraseBG(image.getDrawingCache(), -16777216);
+
+        try {
+            String path = Environment.getExternalStorageDirectory().toString();
+            File filename = new File(path, System.currentTimeMillis() + ".png");
+            OutputStream fOut = new FileOutputStream(filename);
+            if (bitmap != null) {
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, fOut);
+                fOut.flush();
+                fOut.close();
+                message = "Icon saved";
+            } else
+                message = "Something is wrong";
+        } catch (IOException e) {
+            e.printStackTrace();
+            message = "Something is wrong";
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            message = "Something is wrong: Null pointer exception";
+        }
+
+        Snackbar.make(cl, message, Snackbar.LENGTH_LONG).show();
     }
 
     public void changeText(View view) {
