@@ -22,15 +22,24 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <TextView
+            android:id="@+id/click_here"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:gravity="center_horizontal"
+            android:paddingBottom="8dp"
+            android:text="@string/click_icon"/>
+
         <ImageView
             android:id="@+id/imageView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:scaleType="fitCenter"
+            android:layout_below="@id/click_here"
             android:adjustViewBounds="true"
             android:foregroundGravity="center_vertical"
-            android:onClick="colorPicker"/>
+            android:onClick="colorPicker"
+            android:scaleType="fitCenter"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -43,17 +52,17 @@
                 android:id="@+id/etText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="1 or 2 letters"
-                android:layout_weight="1"/>
+                android:layout_weight="1"
+                android:hint="1 or 2 letters"/>
 
             <Button
                 android:id="@+id/buttonGenerate"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:text="Generate"
-                android:singleLine="true"
+                android:layout_weight="1"
                 android:onClick="changeText"
-                android:layout_weight="1"/>
+                android:singleLine="true"
+                android:text="Generate"/>
 
         </LinearLayout>
 

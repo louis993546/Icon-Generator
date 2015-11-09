@@ -2,6 +2,7 @@ package io.github.louistsaitszho.icongenerator;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -14,9 +15,9 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -56,14 +57,15 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.action_save) {
-            //TODO save image
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 4);
             } else {
                 saveImage();
             }
-
             return true;
+        } else if (id == R.id.action_about) {
+            Intent intent = new Intent(this, AboutActivity.class);
+            startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);
@@ -110,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
             TextDrawable drawable = TextDrawable.builder().buildRound(currentText, Color.rgb(currentR, currentG, currentB));
             image.setImageDrawable(drawable);
         } else {
-            Snackbar.make(view, "2 letter MAX! Don't you get it!?", Snackbar.LENGTH_LONG).show();
+            Snackbar.make(view, "2 letter MAX! Idiot!?", Snackbar.LENGTH_LONG).show();
         }
     }
 
