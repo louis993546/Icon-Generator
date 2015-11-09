@@ -25,13 +25,13 @@ import android.widget.ImageView;
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.mikepenz.aboutlibraries.Libs;
 import com.mikepenz.aboutlibraries.LibsBuilder;
-import com.mikepenz.aboutlibraries.LibsConfiguration;
 import com.pes.androidmaterialcolorpickerdialog.ColorPicker;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
     ImageView image;
@@ -60,12 +60,21 @@ public class MainActivity extends AppCompatActivity {
         return b;
     }
 
+    public static int randInt() {
+        Random rand = new Random();
+        return rand.nextInt(255);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        currentR = randInt();
+        currentG = randInt();
+        currentB = randInt();
 
         image = (ImageView) findViewById(R.id.imageView);
         int color = Color.rgb(currentR, currentG, currentB);
@@ -101,17 +110,7 @@ public class MainActivity extends AppCompatActivity {
                     .withActivityTitle("About")
                     .withAboutAppName("Icon Generator")
                     .withAboutDescription("This app allows you to generate a simple text-based icon in seconds")
-                    .withUiListener(new LibsConfiguration.LibsUIListener() {
-                        @Override
-                        public View preOnCreateView(View view) {
-                            return null;
-                        }
-
-                        @Override
-                        public View postOnCreateView(View view) {
-                            return null;
-                        }
-                    })
+                    .withSortEnabled(true)
                     .start(this);
         }
 
